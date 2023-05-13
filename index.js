@@ -26,6 +26,17 @@ const Student = mongoose.model("Student",studentSchema);
 const server=express()
 
 
+// Read students
+server.get("/students",async(req,res)=>{
+    const data= await Student.find({},{name:1,age:1}).sort('age').skip(2).limit(4);
+    console.log(data);
+    res.status(200).send({
+        status: 'success',
+        data:data
+    })
+
+})
+
 // Get API 
 server.get("/students",async(req,res)=>{
     const data= await Student.find({},{name:1,age:1})
