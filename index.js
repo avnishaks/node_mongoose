@@ -19,7 +19,7 @@ const studentSchema = new Schema({
 
 const classSchema = new Schema({
     name: {type:String, unique:true},
-    students:[{type:'ObjectId',ref:'Student'}]
+    students:[{type:Schema.Types.ObjectId,ref:'Student'}]
 },
 {
     versionKey: false
@@ -35,6 +35,13 @@ const Student = mongoose.model("Student",studentSchema);
 const Class = mongoose.model("Class",classSchema);
 
 const server=express()
+
+
+
+  
+
+
+
 
 
 
@@ -63,9 +70,9 @@ server.post("/class",async(req,res)=>{
 // PUT classSchema
 
 server.put("/class/:id", async(req, res) => {
-    const data= await Class.findOneAndUpdate(
+    const data= await Class.findByIdAndUpdate(
         {_id: req.params.id},{$push:{students:req.query.studentId}},{new:true}
-    )
+    ).populate('students')
     console.log(data)
     res.status(200).send({
         status:'success',
