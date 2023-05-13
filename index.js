@@ -28,13 +28,23 @@ const server=express()
 
 // Get API 
 server.get("/students",async(req,res)=>{
-    const data= await Student.find({},{_id:0})
+    const data= await Student.find({},{name:1,age:1})
     console.log(data);
     res.status(200).send({
         status: 'success',
         data:data
     })
 
+})
+
+// Get using id 
+server.get("/students/:id",async(req,res)=>{
+    const data=await Student.find({_id:req.params.id});
+    console.log(data);
+    res.status(200).send({
+        status: 'success',
+        data:data
+    })
 })
 
 
@@ -46,6 +56,30 @@ server.post("/students",async(req,res)=>{
         res.status(201).send(data);
     }).catch((error) => {
         res.status(400).send(error);
+    })
+})
+
+// PUT API
+server.put("/students/:id", async(req, res) => {
+    const data= await Student.findOneAndUpdate(
+        {_id: req.params.id},{$set:{age:req.query.age}},{new:true}
+    )
+    console.log(data)
+    res.status(200).send({
+        status:'success',
+        data: data
+    })
+})
+
+
+// DELETE API
+
+server.delete("/students/:id", async(req, res)=>{
+    const data= await Student.findByIdAndDelete(
+        {_id: req.params.id},{new:true}
+    )
+    res.status(200).send({
+        status:'delete success'
     })
 })
 
