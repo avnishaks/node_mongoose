@@ -17,13 +17,64 @@ const studentSchema = new Schema({
 }
 )
 
+const classSchema = new Schema({
+    name: {type:String, unique:true},
+    students:[{type:'ObjectId',ref:'Student'}]
+},
+{
+    versionKey: false
+}
+
+)
+
 // set the plugin for unique key validation
 studentSchema.plugin(uniqueValidator);
+classSchema.plugin(uniqueValidator);
 
 const Student = mongoose.model("Student",studentSchema);
-
+const Class = mongoose.model("Class",classSchema);
 
 const server=express()
+
+
+
+// Get API classSchema
+server.get("/class",async(req,res)=>{
+    const data= await Class.find({}).populate('students')
+    console.log(data);
+    res.status(200).send({
+        status: 'success',
+        data:data
+    })
+
+})
+
+// Post API classSchema
+server.post("/class",async(req,res)=>{
+    const data = new Class({name:req.query.name,students:[]});
+    console.log(data);
+    data.save().then((data) => {
+        res.status(201).send(data);
+    }).catch((error) => {
+        res.status(400).send(error);
+    })
+})
+
+// PUT classSchema
+
+server.put("/class/:id", async(req, res) => {
+    const data= await Class.findOneAndUpdate(
+        {_id: req.params.id},{$push:{students:req.query.studentId}},{new:true}
+    )
+    console.log(data)
+    res.status(200).send({
+        status:'success',
+        data: data
+    })
+})
+
+
+
 
 
 // Read students
